@@ -1,0 +1,29 @@
+{
+  "name": "rbac",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon --exec ts-node app.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/express-list-endpoints": "^6.0.3",
+    "express": "^4.18.2",
+    "express-list-endpoints": "^6.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.11.3",
+    "rapidjet": "^1.0.5",
+    "sequelize": "^6.37.1",
+    "tsc": "^2.0.4",
+    "typescript": "^5.3.3"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "ts-node": "^10.9.2"
+  }
+}
