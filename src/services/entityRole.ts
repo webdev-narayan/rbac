@@ -1,11 +1,12 @@
 
+import { Op, Model } from 'sequelize';
 import Role from '../models/Role.ts';
 import Role_Permission from '../models/Role_Permission.ts';
 import { IRole, IUpdateRole, IUpdateRolePermission, IfindRole } from '../types/Role.ts';
 
-export async function createRole(body: IRole): Promise<IRole> {
+export async function createRole(data: IRole): Promise<IRole> {
     try {
-        const [find] = await Role.findOrCreate(body as any)
+        const [find] = await Role.findOrCreate(data as any)
         return find.dataValues
     } catch (error) {
         throw error
@@ -23,9 +24,9 @@ export async function deleteRole(id: number): Promise<Boolean> {
         throw error
     }
 }
-export async function updateRole(body: IUpdateRole): Promise<IUpdateRole> {
+export async function updateRole(data: IUpdateRole): Promise<IUpdateRole> {
     try {
-        const [rows, [role]] = await Role.update({ name: body.name, description: body.description }, { where: { id: body.id }, returning: true })
+        const [rows, [role]] = await Role.update({ name: data.name, description: data.description }, { where: { id: data.id }, returning: true })
         return role.dataValues
     } catch (error) {
         throw error
@@ -47,21 +48,29 @@ export async function findRole(): Promise<IfindRole[]> {
         throw error
     }
 }
-export async function updateRolePermission(body: IUpdateRolePermission): Promise<{ message: string }> {
+export async function updateRolePermission(data: IUpdateRolePermission): Promise<{ message: string }> {
     try {
-        if (body.permissions?.length) {
-            let arrayOfPermission = body.permissions.map(item => {
+        if (data.permissions?.length) {
+            let arrayOfPermission = data.permissions.map(item => {
                 return {
-                    RoleId: body.id,
+                    RoleId: data.id,
                     PermissionId: item
                 }
             })
             await Role_Permission.bulkCreate(arrayOfPermission, { updateOnDuplicate: ["RoleId", "PermissionId"] })
         }
-        if (body.removePermissions?.length) {
-
+        if (data.removePermissions?.length) {
+            await Role_Permission.destroy({ where: { id: { [Op.in]: data.removePermissions } } })
         }
         return { message: "Permission updated successfully!" }
+    } catch (error) {
+        throw error
+    }
+}
+export async function associateRole<T extends Model>(data: { model: typeof Model & { new(): T } }): Promise<void> {
+    try {
+        Role.hasMany(data.model as any, { foreignKey: "RoleId", as: "user" })
+        data.model.belongsTo(Role, { foreignKey: "RoleId", as: "users" })
     } catch (error) {
         throw error
     }

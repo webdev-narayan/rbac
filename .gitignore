@@ -1,4 +1,4 @@
 node_modules
-app.ts
+# app.ts
 database
 src/api
